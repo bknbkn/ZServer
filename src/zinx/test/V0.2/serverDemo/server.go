@@ -1,12 +1,12 @@
 package main
 
 import (
-	"Zserver/src/zinx/serverNet"
+	"Zserver/src/zinx/servernet"
 	"fmt"
 )
 
 func main() {
-	s := serverNet.NewServer("V01")
+	s := servernet.NewServer("[V02]")
 	fmt.Println(s)
 	s.Serve()
 }

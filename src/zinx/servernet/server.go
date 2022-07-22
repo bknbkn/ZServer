@@ -1,7 +1,8 @@
-package serverNet
+package servernet
 
 import (
-	"Zserver/src/zinx/serverInterface"
+	"Zserver/src/zinx/serverinterface"
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -10,17 +11,27 @@ import (
 type Server struct {
 	Name      string
 	IPVersion string
-	IPString  string
+	IP        string
 	Port      int
+	Router    serverinterface.IRouter
+}
+
+func ClientHandler(conn *net.TCPConn, data []byte, cnt int) error {
+	log.Println("[Conn Handle]....")
+	if _, err := conn.Write(data[:cnt]); err != nil {
+		log.Println("Write back err: ", err)
+		return errors.New("call back to client error")
+	}
+	return nil
 }
 
 func (server *Server) Start() {
 	log.Printf("[Start] Server %s, IPVersion %s, Listening at %s: %d, is starting",
-		server.Name, server.IPVersion, server.IPString, server.Port)
+		server.Name, server.IPVersion, server.IP, server.Port)
 	go func() {
 		// 1) Get TCP Addr
 		addr, err := net.ResolveTCPAddr(server.IPVersion,
-			fmt.Sprintf("%s:%d", server.IPString, server.Port))
+			fmt.Sprintf("%s:%d", server.IP, server.Port))
 		if err != nil {
 			log.Println("Resolve tcp addr error: ", err)
 			return
@@ -41,20 +52,10 @@ func (server *Server) Start() {
 				log.Println("AcceptTCP err: ", err)
 				continue
 			}
-			go func() {
-				for {
-					buf := make([]byte, 512)
-					cnt, err := conn.Read(buf)
-					if err != nil {
-						log.Println("Receive client stream err: ", err)
-						continue
-					}
-					if _, err := conn.Write(buf[:cnt]); err != nil {
-						log.Println("Write back to client err: ", err)
-						continue
-					}
-				}
-			}()
+			var cid uint32 = 0
+			dealConn := NewConnection(conn, cid, ClientHandler)
+			cid++
+			dealConn.Start()
 		}
 	}()
 }
@@ -68,11 +69,15 @@ func (server *Server) Serve() {
 	select {}
 }
 
-func NewServer(name string) serverInterface.IServer {
+func (server *Server) AddRouter() {
+
+}
+
+func NewServer(name string) serverinterface.IServer {
 	return &Server{
 		Name:      name,
 		IPVersion: "tcp4",
-		IPString:  "0.0.0.0",
+		IP:        "0.0.0.0",
 		Port:      9999,
 	}
 }
