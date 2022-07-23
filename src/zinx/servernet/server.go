@@ -2,7 +2,7 @@ package servernet
 
 import (
 	"Zserver/src/zinx/serverinterface"
-	"errors"
+	"Zserver/src/zinx/utils"
 	"fmt"
 	"log"
 	"net"
@@ -16,18 +16,12 @@ type Server struct {
 	Router    serverinterface.IRouter
 }
 
-func ClientHandler(conn *net.TCPConn, data []byte, cnt int) error {
-	log.Println("[Conn Handle]....")
-	if _, err := conn.Write(data[:cnt]); err != nil {
-		log.Println("Write back err: ", err)
-		return errors.New("call back to client error")
-	}
-	return nil
-}
-
 func (server *Server) Start() {
-	log.Printf("[Start] Server %s, IPVersion %s, Listening at %s: %d, is starting",
+	log.Printf("[Start] Server %s, IPVersion %s, Listening at %s: %d, is starting\n",
 		server.Name, server.IPVersion, server.IP, server.Port)
+	log.Printf("[Start] MaxConnection: %v, MaxPackageSize: %v\n",
+		utils.GlobalConfig.MaxConn, utils.GlobalConfig.MaxPackageSize)
+
 	go func() {
 		// 1) Get TCP Addr
 		addr, err := net.ResolveTCPAddr(server.IPVersion,
@@ -76,10 +70,10 @@ func (server *Server) AddRouter(router serverinterface.IRouter) {
 
 func NewServer(name string) serverinterface.IServer {
 	return &Server{
-		Name:      name,
+		Name:      utils.GlobalConfig.Name,
 		IPVersion: "tcp4",
-		IP:        "0.0.0.0",
-		Port:      9999,
+		IP:        utils.GlobalConfig.Host,
+		Port:      utils.GlobalConfig.TcpPort,
 		Router:    nil,
 	}
 }

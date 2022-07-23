@@ -5,6 +5,7 @@ import (
 	"Zserver/src/zinx/servernet"
 	"fmt"
 	"log"
+	"os"
 )
 
 type PingRouter struct {
@@ -43,6 +44,8 @@ func (p *PingRouter) AfterHandle(request serverinterface.IRequest) {
 }
 
 func main() {
+	path, _ := os.Getwd()
+	fmt.Println(path)
 	s := servernet.NewServer("[V03]")
 	fmt.Println(s)
 

@@ -1,5 +1,11 @@
 package main
 
+import (
+	"bytes"
+	"encoding/binary"
+	"fmt"
+)
+
 type De interface {
 	A()
 	B()
@@ -19,13 +25,10 @@ func (dd DD) B() {
 //	return DD{}
 //}
 func main() {
-	//fmt.Println("heel")
-	var de De
-	//dd := DD{}
-	//de = &dd
-	de = &DD{}
-	de.A()
-	de.B()
-	//http.ListenAndServe()
+	var a uint32 = 18
+	b := bytes.NewBuffer([]byte{})
+
+	binary.Write(b, binary.BigEndian, a)
+	fmt.Printf("%b", b.Bytes())
 
 }

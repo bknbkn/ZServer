@@ -6,8 +6,8 @@ import "Zserver/src/zinx/serverinterface"
 // Router是一类handle策略的集合
 type BaseRouter struct{}
 
-func (b BaseRouter) BeforeHandle(request serverinterface.IRequest) {}
+func (b *BaseRouter) BeforeHandle(request serverinterface.IRequest) {}
 
-func (b BaseRouter) Handle(request serverinterface.IRequest) {}
+func (b *BaseRouter) Handle(request serverinterface.IRequest) {}
 
-func (b BaseRouter) AfterHandle(request serverinterface.IRequest) {}
+func (b *BaseRouter) AfterHandle(request serverinterface.IRequest) {}

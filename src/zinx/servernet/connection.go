@@ -2,6 +2,7 @@ package servernet
 
 import (
 	"Zserver/src/zinx/serverinterface"
+	"Zserver/src/zinx/utils"
 	"log"
 	"net"
 	"time"
@@ -32,7 +33,7 @@ func (conn *Connection) StartReader() {
 	defer conn.Stop()
 
 	for {
-		buf := make([]byte, 512)
+		buf := make([]byte, utils.GlobalConfig.MaxPackageSize)
 		cnt, err := conn.Conn.Read(buf)
 		if err != nil {
 			log.Println("recv buf err :", err)
