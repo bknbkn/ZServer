@@ -11,16 +11,15 @@ type Connection struct {
 	Conn     *net.TCPConn
 	ConnID   uint32
 	isClosed bool
-	handler  serverinterface.HandleFunc
 	ExitChan chan bool
 	Router   serverinterface.IRouter
 }
 
-func NewConnection(conn *net.TCPConn, connID uint32, handler serverinterface.HandleFunc) *Connection {
+func NewConnection(conn *net.TCPConn, connID uint32, router serverinterface.IRouter) *Connection {
 	return &Connection{
 		Conn:     conn,
 		ConnID:   connID,
-		handler:  handler,
+		Router:   router,
 		isClosed: false,
 		ExitChan: make(chan bool, 1),
 	}
@@ -45,6 +44,8 @@ func (conn *Connection) StartReader() {
 			data: buf[:cnt],
 		}
 
+		// 建立新的goroutine，并行处理耗时的任务，这里由于是TCP链接，只负责数据传输
+		// 不需要像HTTP1.1一样等待上一个请求响应后，才能处理下一个请求
 		go func(request serverinterface.IRequest) {
 			conn.Router.BeforeHandle(&req)
 			conn.Router.Handle(&req)

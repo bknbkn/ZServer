@@ -53,7 +53,7 @@ func (server *Server) Start() {
 				continue
 			}
 			var cid uint32 = 0
-			dealConn := NewConnection(conn, cid, ClientHandler)
+			dealConn := NewConnection(conn, cid, server.Router)
 			cid++
 			dealConn.Start()
 		}
@@ -69,8 +69,9 @@ func (server *Server) Serve() {
 	select {}
 }
 
-func (server *Server) AddRouter() {
-
+func (server *Server) AddRouter(router serverinterface.IRouter) {
+	server.Router = router
+	log.Printf("Server %v Add router succ\n", server.Name)
 }
 
 func NewServer(name string) serverinterface.IServer {
@@ -79,5 +80,6 @@ func NewServer(name string) serverinterface.IServer {
 		IPVersion: "tcp4",
 		IP:        "0.0.0.0",
 		Port:      9999,
+		Router:    nil,
 	}
 }
