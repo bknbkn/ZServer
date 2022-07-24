@@ -8,7 +8,10 @@ type IConnection interface {
 	GetTCPConnection() *net.TCPConn
 	GetConnID() uint32
 	RemoteAddr() net.Addr
-	Send(data []byte) error
+	SendMsg(msgId uint32, data []byte) error
+	SetProperty(key string, value interface{})
+	GetProperty(key string) (interface{}, error)
+	RemoveProperty(key string) error
 }
 
 type HandleFunc func(*net.TCPConn, []byte, int) error

@@ -7,6 +7,9 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"io"
+	"log"
+	"net"
 )
 
 /*
@@ -64,5 +67,35 @@ func (d *DataPack) UnPackHead(binData []byte) (serverinterface.IMessage, error) 
 	}
 
 	// 具体data需要下一次读取
+	return msg, nil
+}
+
+// UnpackRead 从tcp字节流中解析出msg
+func (d *DataPack) UnpackRead(conn *net.TCPConn) (serverinterface.IMessage, error) {
+	headData := make([]byte, d.GetHeadLen())
+	if _, err := io.ReadFull(conn, headData); err != nil {
+		log.Println("Read msg head err: ", err)
+		return nil, errors.New("read msg head err")
+	}
+	msg, err := d.UnPackHead(headData)
+	if err != nil {
+		log.Println("Unpack head err: ", err)
+		return nil, errors.New("unpack head err")
+	}
+	if msg.GetMsgLen() > utils.GlobalConfig.MaxPackageSize {
+		log.Printf("msg length is %v, lager than max size : %v",
+			msg.GetMsgLen(), utils.GlobalConfig.MaxPackageSize)
+		return nil, errors.New("too large msg")
+	}
+
+	if msg.GetMsgLen() > 0 {
+		data := make([]byte, msg.GetMsgLen())
+		if _, err := io.ReadFull(conn, data); err != nil {
+			log.Println("Read data err: ", err)
+			return nil, errors.New("read data err")
+		}
+		msg.SetData(data)
+	}
+
 	return msg, nil
 }

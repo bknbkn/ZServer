@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"net/http"
 )
 
 type De interface {
@@ -30,5 +31,5 @@ func main() {
 
 	binary.Write(b, binary.BigEndian, a)
 	fmt.Printf("%b", b.Bytes())
-
+	http.HandleFunc("s", nil)
 }

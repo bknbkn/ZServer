@@ -22,6 +22,9 @@ type Config struct {
 	Version        string
 	MaxConn        int
 	MaxPackageSize uint32 //数据包最大值
+
+	WorkerPoolSize uint32 //消息队列个数
+	MaxWorkerTask  uint32 //每个消息队列中最多消息
 }
 
 var GlobalConfig *Config
@@ -50,6 +53,8 @@ func init() {
 		Version:        "V0.4",
 		MaxConn:        1000,
 		MaxPackageSize: 4096,
+		WorkerPoolSize: 10,
+		MaxWorkerTask:  1024,
 	}
 	GlobalConfig.Reload()
 }
