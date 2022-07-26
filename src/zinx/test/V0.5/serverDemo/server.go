@@ -28,6 +28,6 @@ func main() {
 	s := servernet.NewServer("[V05]")
 	fmt.Println(s)
 
-	s.AddRouter(&PingRouter{})
+	//s.AddRouter(&PingRouter{})
 	s.Serve()
 }
