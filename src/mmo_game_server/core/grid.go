@@ -5,26 +5,29 @@ import (
 	"sync"
 )
 
-type Point struct {
-	X int
-	Y int
+type Region struct {
+	UpperLeftX int
+	UpperLeftY int
+	Width      int
+	Height     int
 }
 
 type Grid struct {
-	Gid       int
-	Width     int
-	Height    int
-	UpperLeft Point
+	Gid int
+	Region
 	playerIDs map[int]bool
 	pIDLock   sync.RWMutex
 }
 
-func NewGrid(gid, width, height int, upperLeft Point) *Grid {
+func NewGrid(gid, width, height, upperLeftX, upperLeftY int) *Grid {
 	return &Grid{
-		Gid:       gid,
-		Width:     width,
-		Height:    height,
-		UpperLeft: upperLeft,
+		Gid: gid,
+		Region: Region{
+			UpperLeftX: upperLeftX,
+			UpperLeftY: upperLeftY,
+			Width:      width,
+			Height:     height,
+		},
 		playerIDs: make(map[int]bool),
 		pIDLock:   sync.RWMutex{},
 	}
@@ -53,6 +56,6 @@ func (g *Grid) GetPlayerIDs() (playerIDs []int) {
 }
 
 func (g *Grid) String() string {
-	return fmt.Sprintf("Grid id: %d, UpperLeft Point: %#v, Width: %d, Height: %d, Players: %v",
-		g.Gid, g.UpperLeft, g.Width, g.Height, g.playerIDs)
+	return fmt.Sprintf("Grid id: %d, Region: %#v, Players: %v",
+		g.Gid, g.Region, g.playerIDs)
 }
