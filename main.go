@@ -1,35 +1,32 @@
 package main
 
 import (
-	"bytes"
-	"encoding/binary"
+	"Zserver/test"
+	"encoding/json"
 	"fmt"
-	"net/http"
+	"google.golang.org/protobuf/proto"
+	"log"
 )
 
-type De interface {
-	A()
-	B()
-}
-type DD struct {
-}
-
-func (dd *DD) A() {
-
-}
-
-func (dd DD) B() {
-
-}
-
-//func NewA() De {
-//	return DD{}
-//}
 func main() {
-	var a uint32 = 18
-	b := bytes.NewBuffer([]byte{})
+	user := test.User{}
+	user.Address = "sadsda"
+	user.Password = "123456"
+	user.UserName = "仙士可"
+	bytes, _ := json.Marshal(user)
+	fmt.Println(string(bytes))
+	//序列化user结构体数据
+	out, err := proto.Marshal(&user)
+	if err != nil {
+		log.Fatalln("Failed to encode address book:", err)
+	}
 
-	binary.Write(b, binary.BigEndian, a)
-	fmt.Printf("%b", b.Bytes())
-	http.HandleFunc("s", nil)
+	//反序列化user结构体
+	user2 := test.User{}
+	err = proto.Unmarshal(out, &user2)
+	if err != nil {
+		log.Fatalln("Failed to parse address User:", err)
+	}
+	bytes, _ = json.Marshal(user2)
+	fmt.Println(string(bytes))
 }
